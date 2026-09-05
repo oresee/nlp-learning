@@ -1,0 +1,26 @@
+# 阶段 1 — 基础
+numpy
+matplotlib
+scipy
+scikit-learn
+jupyter
+ipykernel
+tqdm
+
+# 阶段 1 M3 起 — PyTorch
+# ⚠️ 不要用 pip install torch 直接装！
+# 必须到 https://pytorch.org/get-started/locally/ 选择匹配你 CUDA 版本的命令。
+# 装完验证：python -c "import torch; print(torch.cuda.is_available())" 必须输出 True
+
+# 阶段 2 — NLP
+tokenizers
+datasets
+tensorboard
+
+# 阶段 3 — LLM（用到时再装）
+# transformers
+# accelerate
+# peft
+# trl
+# bitsandbytes
+# sentencepiece

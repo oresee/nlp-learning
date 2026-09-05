@@ -1,0 +1,29 @@
+# 数据与模型（大文件，可重新生成，两台机器各自维护）
+data/
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.gguf
+checkpoints/
+runs/
+wandb/
+outputs/
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+*.egg-info/
+.venv/
+venv/
+env/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude Code 本地状态
+.claude/settings.local.json

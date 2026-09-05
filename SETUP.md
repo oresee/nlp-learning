@@ -1,19 +1,57 @@
 # 环境搭建与跨设备同步
 
+## ⚠️ 先读这一条：5070 Ti 的 CUDA 版本要求
+
+台式机的 **RTX 5070 Ti 是 Blackwell 架构（sm_120）**，老版本 PyTorch 不认识这张卡。
+装了 cu121 / cu124 等旧构建会报：
+
+```
+CUDA error: no kernel image is available for execution on the device
+```
+
+这个错误有迷惑性 —— `torch.cuda.is_available()` 可能返回 True，但一跑实际计算就崩。
+
+**必须装 CUDA 12.8 或更新版本的 PyTorch 构建。**
+到 https://pytorch.org/get-started/locally/ 手动选 CUDA 12.8+，不要用页面默认选中的那个。
+
+笔记本的 RTX 3060（Ampere, sm_86）没有这个限制，但两台机器装同一个版本最省心。
+
+---
+
 ## 一、Python 环境（两台机器都要做）
 
-检测结果：**这台笔记本目前没有安装 Python**。
+**版本选择：建议 3.12。**
+阶段 1、2 用 3.12 / 3.13 都行；但阶段 3 会用到 `bitsandbytes`、`flash-attn` 这类需要编译的包，
+它们的预编译 wheel 对最新 Python 版本经常滞后，3.13 上可能要自己编译。3.12 省事。
+
+检测记录：
+- 笔记本：无 Python（2026-09-05）
+- 台式机：已装 Python 3.12 或 3.13（待确认具体版本）
 
 ### 1. 装 Miniconda
 到 https://docs.conda.io/en/latest/miniconda.html 下载 Windows 64-bit 安装包。
 安装时**勾选**「Add Miniconda3 to my PATH environment variable」（虽然官方不推荐，但对你后面用 Git Bash 方便很多）。
 
-### 2. 创建环境
+### 2. 创建虚拟环境（二选一）
+
+**A. 已经装了 Python（台式机的情况）—— 直接用 venv，不必再装 conda：**
 
 ```bash
-conda create -n nlp python=3.11 -y
+python -m venv .venv
+.venv\Scripts\activate        # PowerShell / CMD
+source .venv/Scripts/activate  # Git Bash
+```
+
+若系统 Python 是 3.13 而你想用 3.12，用 py launcher 指定：`py -3.12 -m venv .venv`
+
+**B. 没装 Python（笔记本的情况）—— 用 conda：**
+
+```bash
+conda create -n nlp python=3.12 -y
 conda activate nlp
 ```
+
+`.venv/` 已在 `.gitignore` 里，不会被同步 —— 两台机器各自建各自的。
 
 ### 3. 装 PyTorch（注意两台机器的 CUDA 版本可能不同）
 
@@ -30,6 +68,14 @@ python -c "import torch; print(torch.__version__, torch.cuda.is_available(), tor
 ```
 
 必须打印出 `True` 和你的显卡型号。**打印 False 就是装错了版本，别将就着往下走。**
+
+**台式机还要额外做一步实际计算验证**（`is_available()` 返回 True 不代表能跑）：
+
+```bash
+python -c "import torch; x=torch.randn(1000,1000,device='cuda'); print((x).sum().item()); print(torch.cuda.get_device_capability())"
+```
+
+能打印出数值且 capability 显示 `(12, 0)` 才算真正装对。报 `no kernel image` 就是 CUDA 版本太旧，重装 cu128+。
 
 ### 4. 装其余依赖
 

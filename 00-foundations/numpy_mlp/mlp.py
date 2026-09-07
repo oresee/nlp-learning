@@ -119,23 +119,23 @@ def backward(params, cache, Y):
     X, Z1, A1, A2 = cache["X"], cache["Z1"], cache["A1"], cache["A2"]
 
     # TODO 1: dZ2 = ?
-    dZ2 = np.zeros_like(A2)
+    dZ2 = 1/m*(A2-Y)
 
     # TODO 2: dW2 = ?
-    dW2 = np.zeros_like(params["W2"])
+    dW2 = dZ2 @ A1.T
 
     # TODO 3: db2 = ?
-    db2 = np.zeros_like(params["b2"])
+    db2 = np.sum(dZ2,axis=1,keepdims=True)
 
     # TODO 4: dA1 = ?
-    dA1 = np.zeros_like(A1)
+    dA1 = W2.T @ dZ2 
 
     # TODO 5: dZ1 = ?
-    dZ1 = np.zeros_like(Z1)
+    dZ1 = dA1 * (Z1>0)
 
     # TODO 6: dW1, db1 = ?
-    dW1 = np.zeros_like(params["W1"])
-    db1 = np.zeros_like(params["b1"])
+    dW1 = dZ1 @ X.T
+    db1 = np.sum(dZ1,axis=1,keepdims=True)
 
     grads = {"dW1": dW1, "db1": db1, "dW2": dW2, "db2": db2}
 

@@ -26,7 +26,14 @@ CUDA error: no kernel image is available for execution on the device
 
 检测记录：
 - 笔记本：无 Python（2026-09-05）
-- 台式机：已装 Python 3.12 或 3.13（待确认具体版本）
+- 台式机：**Python 3.14.3**，位于 `D:\PYTHON\python.exe`（2026-09-07 实测确认）
+  - 已装 numpy 2.4.3 / scipy 1.17.1 / matplotlib 3.10.8 / pandas 3.0.1，**阶段 1 可直接开跑**
+  - torch 未装。已查证 PyTorch 官方源对 Python 3.14 的支持：`cu130` 通道最高 2.14.0、`cu128` 通道最高 2.11.0，均可用
+  - 驱动 610.62（CUDA UMD 13.3），**cu128 与 cu130 构建都满足 sm_120 的要求**
+  - 阶段 3 之前另建一个 3.12 环境，用于 `bitsandbytes` / `flash-attn`
+
+**台式机实测硬件（2026-09-07）：** Ryzen 7 9700X 8C/16T ｜ 内存 **16GB（15.2GB 可用）** ｜ RTX 5070 Ti 16303MiB ｜ Win11 26200
+> ⚠️ 内存只有 16GB，和显存一样大。阶段 3 加载 7B 模型时不能用默认加载路径，必须 `low_cpu_mem_usage=True` + `device_map`，否则内存 OOM。
 
 ### 1. 装 Miniconda
 到 https://docs.conda.io/en/latest/miniconda.html 下载 Windows 64-bit 安装包。

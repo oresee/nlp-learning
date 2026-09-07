@@ -88,7 +88,7 @@ def main():
     print("=" * 58)
     if all_ok:
         print("  全部通过。你的反向传播是对的。")
-        print("  下一步：python train_mnist.py")
+        print("  下一步：python train.py")
     else:
         print("  有未通过项。排查顺序（从后往前，因为误差会向前传播）：")
         print("    1. dW2 / db2 错  → 问题出在 dZ2，先检查它")

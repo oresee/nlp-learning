@@ -27,3 +27,6 @@ Thumbs.db
 
 # Claude Code 本地状态
 .claude/settings.local.json
+
+# 训练产生的图（每次运行覆盖，可重新生成）
+training_curve.png

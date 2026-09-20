@@ -20,19 +20,24 @@ CUDA error: no kernel image is available for execution on the device
 
 ## 一、Python 环境（两台机器都要做）
 
-**版本选择：建议 3.12。**
-阶段 1、2 用 3.12 / 3.13 都行；但阶段 3 会用到 `bitsandbytes`、`flash-attn` 这类需要编译的包，
-它们的预编译 wheel 对最新 Python 版本经常滞后，3.13 上可能要自己编译。3.12 省事。
+**版本选择：本项目统一 3.13（2026-09-21 起，两台机器都已切到 3.13.15）。**
+阶段 1、2 任何版本都行。定 3.13 的理由是阶段 3 的 `bitsandbytes` / `flash-attn` 需要编译，
+预编译 wheel 对**最新**版本（3.14）滞后明显，而 3.13 的覆盖已经够用。
+**→ 原计划的「阶段 3 前另建 3.12 环境」作废，不需要了。**
 
-检测记录：
-- 笔记本：无 Python（2026-09-05）
-- 台式机：**Python 3.14.3**，位于 `D:\PYTHON\python.exe`（2026-09-07 实测确认）
-  - 已装 numpy 2.4.3 / scipy 1.17.1 / matplotlib 3.10.8 / pandas 3.0.1，**阶段 1 可直接开跑**
-  - torch 未装。已查证 PyTorch 官方源对 Python 3.14 的支持：`cu130` 通道最高 2.14.0、`cu128` 通道最高 2.11.0，均可用
-  - 驱动 610.62（CUDA UMD 13.3），**cu128 与 cu130 构建都满足 sm_120 的要求**
-  - 阶段 3 之前另建一个 3.12 环境，用于 `bitsandbytes` / `flash-attn`
+检测记录（最新在上）：
 
-**台式机实测硬件（2026-09-07）：** Ryzen 7 9700X 8C/16T ｜ 内存 **16GB（15.2GB 可用）** ｜ RTX 5070 Ti 16303MiB ｜ Win11 26200
+| 机器 | Python | 位置 | 备注 |
+|---|---|---|---|
+| 笔记本 | **3.13.15** | `D:\Program\Python\Python313` | 2026-09-20 装好，venv 已建 |
+| 台式机 | **3.13.15** | `G:\Program\Python\Python313` | 2026-09-21 实测；`.venv` 已在其上重建 |
+| 台式机（旧） | 3.14.3 | `D:\PYTHON` | **仍是系统默认**（`python` / `py` 都指向它），但项目不再用 |
+
+两边 venv 的包一致：numpy 2.5.3 / scipy 1.18.1 / matplotlib 3.11.1 / scikit-learn 1.9.0。
+**torch 两台都未装** —— M1、M2 不需要，到 M3 再装。
+届时注意：驱动 610.62（CUDA UMD 13.3），**cu128 与 cu130 构建都满足 5070 Ti 的 sm_120 要求**。
+
+**台式机实测硬件（2026-09-07，硬件未变）：** Ryzen 7 9700X 8C/16T ｜ 内存 **16GB（15.2GB 可用）** ｜ RTX 5070 Ti 16303MiB ｜ Win11 26200
 > ⚠️ 内存只有 16GB，和显存一样大。阶段 3 加载 7B 模型时不能用默认加载路径，必须 `low_cpu_mem_usage=True` + `device_map`，否则内存 OOM。
 
 ### 1. 装 Miniconda
